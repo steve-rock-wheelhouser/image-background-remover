@@ -6,41 +6,38 @@
 
 set -eu
 
-COMPONENT_ID="com.wheelhouser.image-remove-background"
-SCREENSHOT_URL="https://raw.githubusercontent.com/steve-rock-wheelhouser/image-background-remover/main/assets/screenshots/screenshot-01.png"
-
-SUDO=""
+# If not running as root, re-exec via sudo to perform system-level refreshes.
 if [ "$(id -u)" -ne 0 ]; then
   if command -v sudo >/dev/null 2>&1; then
-    SUDO=sudo
+    echo "This script requires root for full refresh actions. Re-running with sudo..."
+    exec sudo sh "$0" "$@"
   else
-    echo "WARNING: not running as root and sudo is not available; system cache refresh steps will be skipped." >&2
+    echo "Run this script as root or install sudo to allow automatic elevation." >&2
   fi
 fi
+
+COMPONENT_ID="com.wheelhouser.image-remove-background"
+SCREENSHOT_URL="https://raw.githubusercontent.com/steve-rock-wheelhouser/image-background-remover/main/assets/screenshots/screenshot-01.png"
 
 echo "== Refresh & Diagnostic for GNOME Software (Image Background Remover) =="
 echo "Component: $COMPONENT_ID"
 echo
 
-echo "-- System refresh (requires root) --"
-if [ -n "$SUDO" ]; then
-  echo "Running: $SUDO appstreamcli refresh-cache --system --verbose"
-  $SUDO appstreamcli refresh-cache --system --verbose || echo "appstreamcli refresh-cache returned non-zero" >&2
+echo "-- System refresh (running as root) --"
+echo "Running: appstreamcli refresh-cache --system --verbose"
+appstreamcli refresh-cache --system --verbose || echo "appstreamcli refresh-cache returned non-zero" >&2
 
-  echo "Running: $SUDO update-desktop-database /usr/share/applications"
-  $SUDO update-desktop-database /usr/share/applications || echo "update-desktop-database returned non-zero" >&2
+echo "Running: update-desktop-database /usr/share/applications"
+update-desktop-database /usr/share/applications || echo "update-desktop-database returned non-zero" >&2
 
-  echo "Running: $SUDO gtk-update-icon-cache -f -t /usr/share/icons/hicolor"
-  $SUDO gtk-update-icon-cache -f -t /usr/share/icons/hicolor || echo "gtk-update-icon-cache returned non-zero" >&2
+echo "Running: gtk-update-icon-cache -f -t /usr/share/icons/hicolor"
+gtk-update-icon-cache -f -t /usr/share/icons/hicolor || echo "gtk-update-icon-cache returned non-zero" >&2
 
-  echo "Restarting PackageKit: $SUDO systemctl restart packagekit"
-  $SUDO systemctl.restart packagekit || echo "systemctl restart packagekit returned non-zero" >&2
+echo "Restarting PackageKit: systemctl restart packagekit"
+systemctl restart packagekit || echo "systemctl restart packagekit returned non-zero" >&2
 
-  echo "Killing gnome-software processes so UI reloads (if running)"
-  $SUDO pkill -f gnome-software || true
-else
-  echo "Skipping system refresh (run with sudo to perform system cache refresh)."
-fi
+echo "Killing gnome-software processes so UI reloads (if running)"
+pkill -f gnome-software || true
 
 echo
 echo "-- Short delay to allow caches to update --"
