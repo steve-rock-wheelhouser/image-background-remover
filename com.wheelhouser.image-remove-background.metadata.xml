@@ -72,9 +72,7 @@
         <image>https://raw.githubusercontent.com/steve-rock-wheelhouser/image-background-remover/main/assets/screenshots/screenshot-02.png</image>
          <!-- <image>file:///usr/share/remove-background/screenshots/screenshot-02.png</image> -->
     </screenshot>
-  </screenshots>
-  
-  <releases>
+  </screenshots>  <releases>
     <release version="0.1.0" date="2025-12-12">
       <description>
         <p xml:lang="en">Initial release: one-click background removal, batch mode, and CLI support.</p>
