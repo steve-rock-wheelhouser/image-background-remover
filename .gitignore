@@ -31,3 +31,4 @@ remove-background.dist/
 .idea/
 .DS_Store
 Thumbs.db
+*.bundle
