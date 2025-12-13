@@ -91,7 +91,7 @@ class BackgroundRemoverApp(QMainWindow):
         # --- Header Section ---
         header_layout = QHBoxLayout()
         
-        self.btn_load = QPushButton("Load Image")
+        self.btn_load = QPushButton("Select Image")
         self.btn_load.clicked.connect(self.load_image)
         header_layout.addWidget(self.btn_load)
 
