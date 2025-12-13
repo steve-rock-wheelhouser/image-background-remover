@@ -51,14 +51,14 @@
 
   <url type="homepage">https://wheelhouser.com</url>
   <url type="bugtracker">https://github.com/steve-rock-wheelhouser/image-background-remover/issues</url>
-  <url type="contact">https://wheelhouser.com</url>
+  <url type="contact">https://github.com/steve-rock-wheelhouser/image-background-remover/issues</url>
 
   <content_rating type="oars-1.1" />
 
   <screenshots>
     <screenshot type="default">
       <caption xml:lang="en">Main window showing preview and tools</caption>
-      <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenhot.png</image>
+      <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenshot-01.png</image>
     </screenshot>
     <screenshot>
       <caption xml:lang="en">Batch processing multiple images</caption>
