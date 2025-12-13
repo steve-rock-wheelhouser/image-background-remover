@@ -15,7 +15,10 @@ if [ $# -lt 1 ]; then
 fi
 
 COMMIT_MSG="$1"
-BRANCH="${2:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)}"
+# Determine branch: use provided, else try to get current branch, fallback to 'main'
+BRANCH_RAW="${2:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)}"
+# Sanitize branch: take first line and remove CR/LF characters to avoid invalid refspecs
+BRANCH="$(printf '%s' "$BRANCH_RAW" | sed -n '1p' | tr -d '\r' | tr -d '\n')"
 REMOTE_NAME="${REMOTE_NAME:-origin}"
 REMOTE_URL="${GIT_REMOTE_URL:-https://github.com/steve-rock-wheelhouser/image-background-remover.git}"
 
@@ -62,8 +65,8 @@ else
 fi
 
 echo "--- Pushing to $REMOTE_NAME/$BRANCH ---"
-# Use -u on first push to set upstream
-if git rev-parse --verify "$REMOTE_NAME/$BRANCH" >/dev/null 2>&1; then
+# Use -u on first push to set upstream. Check remote branch existence via git ls-remote.
+if git ls-remote --exit-code --heads "$REMOTE_NAME" "$BRANCH" >/dev/null 2>&1; then
     git push "$REMOTE_NAME" "$BRANCH"
 else
     git push -u "$REMOTE_NAME" "$BRANCH"
