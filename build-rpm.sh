@@ -42,24 +42,31 @@ mkdir -p $RPMBUILD_DIR/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
 # Copy project sources that the spec expects into SOURCES so rpmbuild can access them
 echo "--- Preparing SOURCES ---"
-cp -f "${PWD}/com.wheelhouser.image-remove-background.desktop" "$RPMBUILD_DIR/SOURCES/" || true
-cp -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" "$RPMBUILD_DIR/SOURCES/" || true
+SOURCE_DIR="remove-background-${VERSION}"
+mkdir -p "build/${SOURCE_DIR}"
+
+# Copy files to source dir
+cp -f "${PWD}/com.wheelhouser.image-remove-background.desktop" "build/${SOURCE_DIR}/" || true
+cp -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" "build/${SOURCE_DIR}/" || true
 if [ -f "${PWD}/build/${BINARY_NAME}" ]; then
-    cp -f "${PWD}/build/${BINARY_NAME}" "$RPMBUILD_DIR/SOURCES/remove-background.bin"
+    cp -f "${PWD}/build/${BINARY_NAME}" "build/${SOURCE_DIR}/remove-background.bin"
 fi
+
+# Handle Icon
 if [ -f "${PWD}/icon.png" ]; then
-    cp -f "${PWD}/icon.png" "$RPMBUILD_DIR/SOURCES/"
+    cp -f "${PWD}/icon.png" "build/${SOURCE_DIR}/icon.png"
+elif [ -f "${PWD}/assets/icons/linux/256x256/icon.png" ]; then
+    echo "Copying assets/icons/linux/256x256/icon.png as icon.png"
+    cp -f "${PWD}/assets/icons/linux/256x256/icon.png" "build/${SOURCE_DIR}/icon.png"
+elif [ -f "${PWD}/assets/icons/icon_remove-background.png" ]; then
+    echo "Copying assets/icons/icon_remove-background.png as icon.png"
+    cp -f "${PWD}/assets/icons/icon_remove-background.png" "build/${SOURCE_DIR}/icon.png"
 fi
-# If no root-level icon, try the assets icon (256x256) and copy it as icon.png for the spec
-if [ ! -f "$RPMBUILD_DIR/SOURCES/icon.png" ]; then
-    if [ -f "${PWD}/assets/icons/linux/256x256/icon.png" ]; then
-        echo "Copying assets/icons/linux/256x256/icon.png as icon.png into SOURCES"
-        cp -f "${PWD}/assets/icons/linux/256x256/icon.png" "$RPMBUILD_DIR/SOURCES/icon.png"
-    elif [ -f "${PWD}/assets/icons/icon_remove-background.png" ]; then
-        echo "Copying assets/icons/icon_remove-background.png as icon.png into SOURCES"
-        cp -f "${PWD}/assets/icons/icon_remove-background.png" "$RPMBUILD_DIR/SOURCES/icon.png"
-    fi
-fi
+
+# Create Tarball
+echo "--- Creating Source Tarball ---"
+tar -czf "$RPMBUILD_DIR/SOURCES/remove-background-${VERSION}.tar.gz" -C build "${SOURCE_DIR}"
+
 
 # Validate AppStream metadata
 echo "--- Validating AppStream metadata ---"
@@ -89,13 +96,12 @@ if ! grep -q "%changelog" remove-background.spec; then
 EOF
 fi
 
-# Update Release in spec file
+# Update Version and Release in spec file
+sed -i "s/^Version:[[:space:]]*.*/Version:    ${VERSION}/" remove-background.spec
 sed -i "s/^Release:[[:space:]]*.*/Release:    ${RELEASE}/" remove-background.spec
 
-rpmbuild -bb \
+rpmbuild -ba \
     --define "_topdir $RPMBUILD_DIR" \
-    --define "_project_dir $PWD" \
-    --define "_bin_dir $PWD/build" \
     --define "__os_install_post %{nil}" \
     remove-background.spec
 

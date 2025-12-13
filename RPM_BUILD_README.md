@@ -1,6 +1,6 @@
-# Image Background Remover RPM Packaging Guide
+# Image Resizer RPM Packaging Guide
 
-This document details the process, prerequisites, and structure for packaging the **Image Background Remover** application as an RPM for Fedora/RHEL-based systems. It documents the exact filenames and steps required so the GNOME Software (Software Center) will read AppStream metadata and display screenshots.
+This document details the process, prerequisites, and structure for packaging the **Image Resizer** application as an RPM for Fedora/RHEL-based systems.
 
 ## Overview
 
@@ -22,9 +22,10 @@ The build script automatically attempts to install dependencies using `dnf`. You
 ## Project Structure
 
 *   **`build-rpm.sh`**: The main orchestration script.
-*   **`remove-background.spec`**: The RPM specification file defining dependencies and installation paths (this repo uses `remove-background.spec`).
-*   **`com.wheelhouser.image-remove-background.desktop`**: System menu integration file (desktop ID must match the AppStream `<launchable>` value).
-*   **`com.wheelhouser.image-remove-background.metadata.xml`** (packaged/installed as `com.wheelhouser.image-remove-background.appdata.xml`): AppStream metadata for Software Center visibility.
+*   **`image-resizer.spec`**: The RPM specification file defining dependencies and installation paths.
+*   **`com.wheelhouser.image-resizer.desktop`**: System menu integration file.
+*   **`com.wheelhouser.image-resizer.metainfo.xml`**: AppStream metadata for software center visibility.
+*   **`build_binary.sh`**: (External) Script referenced to compile the Python code into a binary using Nuitka.
 
 ## The Build Process
 
@@ -37,7 +38,8 @@ To build the RPM, run the script from the project root:
 ### Workflow Breakdown
 
 1.  **Version Management**:
-    *   The build script increments the `Release` number stored in `.release_info` so repeated builds of the same `Version` produce incremented `Release` values.
+    *   Updates the `Version` in `image-resizer.spec` to `0.3.0`.
+    *   Auto-increments the `Release` number in the spec file (e.g., `4%{?dist}` -> `5%{?dist}`) to ensure upgrade paths work correctly.
 
 2.  **Pre-Build Validation**:
     *   Validates the AppStream metadata (`metainfo.xml`) using `appstreamcli`.
@@ -47,21 +49,26 @@ To build the RPM, run the script from the project root:
     *   Executes `./build_binary.sh` to generate the standalone executable.
 
 4.  **Source Preparation**:
-    *   The script prepares a local `rpmbuild` tree under the repository (`./rpmbuild`) and copies the files the spec expects into `rpmbuild/SOURCES/` (desktop file, metadata, binary, icon).
-    *   The spec does not rely on a Source0 tarball in this repository layout — files are supplied to `rpmbuild/SOURCES/` directly by `build-rpm.sh`.
+    *   Creates a clean build environment in `build/rpm-source`.
+    *   Bundles the binary, assets, desktop file, metadata, and license into a tarball (`image-resizer-0.3.0.tar.gz`).
+    *   This tarball serves as `Source0` for the RPM build.
 
 5.  **RPM Build**:
     *   Sets up a local `rpmbuild` directory structure (`BUILD`, `RPMS`, `SOURCES`, etc.).
     *   Runs `rpmbuild -ba` using the generated tarball and the spec file.
 
-## RPM Specification Details (`remove-background.spec`)
+## RPM Specification Details (`image-resizer.spec`)
 
 The spec file handles the installation logic on the end-user's system.
 
-*   **Binary Placement**: The main binary is installed to `%{_bindir}/remove-background` (see spec for exact path).
+*   **Binary Placement**: The main binary is installed to `%{_libexecdir}/image-resizer/` (e.g., `/usr/libexec/image-resizer/`) to keep it private and separate from user commands.
+*   **Wrapper Script**: A shell script is created at `%{_bindir}/image-resizer` (e.g., `/usr/bin/image-resizer`) to launch the application with specific environment variables:
+    *   `GTK_THEME=Adwaita:dark`: Forces dark mode for native dialogs.
+    *   `GTK_USE_PORTAL=1`: Requests modern file chooser portals (better view settings retention).
+    *   `QT_QPA_PLATFORMTHEME=gtk3`: Ensures Qt uses GTK3 theming for consistency.
 *   **Metadata**:
     *   Installs the `.desktop` file to `%{_datadir}/applications`.
-    *   Installs the AppStream metadata file as `/usr/share/metainfo/com.wheelhouser.image-remove-background.appdata.xml` (this is required — the `.appdata.xml` extension and the component `<id>` must match the desktop ID `<launchable>`).
+    *   Installs the `.metainfo.xml` to `%{_metainfodir}` (usually `/usr/share/metainfo`).
 *   **Icons**: Installs the application icon to `/usr/share/icons/hicolor/256x256/apps/`.
 
 ## RPM Signing
@@ -98,12 +105,6 @@ sudo dnf install dist/image-resizer-0.3.0-*.rpm
 
 ## Troubleshooting
 
-- **"rpmbuild not found"**: Install `rpm-build` (and `rpmdevtools`) before running `./build-rpm.sh`.
-- **AppStream Validation Failed**: Run `appstreamcli validate com.wheelhouser.image-remove-background.metadata.xml` and fix any reported errors. Do not add invalid `file:///` screenshot entries — AppStream expects web URLs for the primary screenshot entries.
-- **No screenshots in GNOME Software when opening an RPM file**: Common causes and steps:
-    - Ensure the RPM actually contains `/usr/share/metainfo/com.wheelhouser.image-remove-background.appdata.xml` (the spec in this repo installs the metadata under that name).
-    - Rebuild the RPM with `./build-rpm.sh`, then run `sudo bash scripts/verify_rpm_and_refresh.sh` on your Fedora host. That script will:
-        - Inspect the RPM contents, extract and validate the packaged AppStream file, refresh the AppStream cache, update desktop/icon caches, restart PackageKit, and restart GNOME Software.
-    - If PackageKit logs show `Failed to get cache filename for <id>` while opening the RPM, run the verify script as root and capture the output; the script already saves useful commands and hints to follow.
-
-If you'd like, I can also update the spec/build flow to produce a `Source0` tarball instead of copying files into `rpmbuild/SOURCES/`, but the current flow in this repo uses direct `SOURCES/` copies from the project root.
+*   **"rpmbuild not found"**: Ensure you have installed the `rpm-build` package.
+*   **AppStream Validation Failed**: Check `com.wheelhouser.image-resizer.metainfo.xml` for syntax errors or deprecated tags (e.g., `<developer_name>` vs `<developer>`).
+*   **Signing Skipped**: Ensure `rpm-sign` is installed and `~/.rpmmacros` contains your GPG key ID.
