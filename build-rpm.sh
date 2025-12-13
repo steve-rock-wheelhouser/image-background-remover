@@ -63,6 +63,20 @@ if [ ! -f "$RPMBUILD_DIR/SOURCES/icon.png" ]; then
     fi
 fi
 
+# Validate AppStream metadata
+echo "--- Validating AppStream metadata ---"
+if ! command -v appstreamcli &> /dev/null; then
+
+    echo "Error: 'appstreamcli' is not installed. Please install the 'appstream' package."
+    exit 1
+fi
+appstreamcli validate com.wheelhouser.image-remove-background.metadata.xml
+if [ $? -ne 0 ]; then
+    echo "AppStream metadata validation failed. Please fix the errors above."
+    exit 1
+fi
+
+
 # 3. Build the RPM
 echo "--- Building RPM ---"
 
