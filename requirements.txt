@@ -1,0 +1,6 @@
+nuitka
+onnxruntime
+patchelf
+Pillow
+PySide6
+rembg

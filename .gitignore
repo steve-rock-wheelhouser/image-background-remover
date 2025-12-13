@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Nuitka / Compilation
+*.build/
+*.dist/
+*.bin
+*.onefile-build/
+
+# Packaging
+*.rpm
+*.spec
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

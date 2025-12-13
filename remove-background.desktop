@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Image Background Remover
+Comment=AI Background Remover
+Exec=remove-background
+Icon=remove-background
+Terminal=false
+Categories=Graphics;Utility;
+StartupNotify=true
+StartupWMClass=remove-background
