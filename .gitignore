@@ -11,6 +11,17 @@ venv/
 *.bin
 *.onefile-build/
 
+# Project build / artifacts
+archive/
+build/
+dist/
+output/
+rpmbuild/
+remove_background.build/
+remove_background.dist/
+remove-background.build/
+remove-background.dist/
+
 # Packaging
 *.rpm
 *.spec
