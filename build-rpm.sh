@@ -35,16 +35,14 @@ if [ ! -f "build/$BINARY_NAME" ]; then
 fi
 
 # 2. Prepare RPM Build Directory Structure
-RPMBUILD_DIR="$HOME/projects/Remove-Background/rpmbuild"
-echo "--- Cleaning previous RPMs ---"
-rm -rf "$RPMBUILD_DIR/RPMS"
+RPMBUILD_DIR="$PWD/rpmbuild"
+echo "--- Cleaning build environment ---"
+rm -rf "$RPMBUILD_DIR"
 mkdir -p $RPMBUILD_DIR/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
 # Copy project sources that the spec expects into SOURCES so rpmbuild can access them
 echo "--- Preparing SOURCES ---"
-cp -f "${PWD}/remove-background.desktop" "$RPMBUILD_DIR/SOURCES/" || true
-# Copy both standard metadata.xml (if present) and the Flatpak-style metadata filename
-cp -f "${PWD}/metadata.xml" "$RPMBUILD_DIR/SOURCES/" || true
+cp -f "${PWD}/com.wheelhouser.image-remove-background.desktop" "$RPMBUILD_DIR/SOURCES/" || true
 cp -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" "$RPMBUILD_DIR/SOURCES/" || true
 if [ -f "${PWD}/build/${BINARY_NAME}" ]; then
     cp -f "${PWD}/build/${BINARY_NAME}" "$RPMBUILD_DIR/SOURCES/remove-background.bin"

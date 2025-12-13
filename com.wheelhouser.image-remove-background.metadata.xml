@@ -33,7 +33,7 @@
     </p>
   </description>
 
-  <launchable type="desktop-id">remove-background.desktop</launchable>
+  <launchable type="desktop-id">com.wheelhouser.image-remove-background.desktop</launchable>
   <developer id="com.wheelhouser">
     <name>Wheelhouser LLC</name>
     <url>https://wheelhouser.com</url>
@@ -58,15 +58,19 @@
   <screenshots>
     <screenshot type="default">
       <caption xml:lang="en">Main window showing preview and tools</caption>
-      <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenshot.png</image>
+        <image>https://raw.githubusercontent.com/steve-rock-wheelhouser/image-background-remover/main/assets/screenshots/screenshot.png</image>
+        <!-- Local packaged fallback (packaged in RPM) -->
+         <!-- <image>file:///usr/share/metainfo/com.wheelhouser.image-remove-background/screenshots/screenshot.png</image> -->
     </screenshot>
     <screenshot>
       <caption xml:lang="en">Batch processing multiple images</caption>
-      <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenshot-01.png</image>
+        <image>https://raw.githubusercontent.com/steve-rock-wheelhouser/image-background-remover/main/assets/screenshots/screenshot-01.png</image>
+         <!-- <image>file:///usr/share/metainfo/com.wheelhouser.image-remove-background/screenshots/screenshot-01.png</image> -->
     </screenshot>
     <screenshot>
       <caption xml:lang="en">Optional feather and edge smoothing controls</caption>
-      <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenshot-02.png</image>
+        <image>https://raw.githubusercontent.com/steve-rock-wheelhouser/image-background-remover/main/assets/screenshots/screenshot-02.png</image>
+         <!-- <image>file:///usr/share/metainfo/com.wheelhouser.image-remove-background/screenshots/screenshot-02.png</image> -->
     </screenshot>
   </screenshots>
   

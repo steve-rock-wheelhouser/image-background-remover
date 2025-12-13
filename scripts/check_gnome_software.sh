@@ -9,7 +9,7 @@ APPDATA="${COMPONENT_ID}.appdata.xml"
 SYSTEM_APPDATA_DIR="/usr/share/metainfo"
 SYSTEM_DESKTOP_DIR="/usr/share/applications"
 SYSTEM_ICON_DIR="/usr/share/icons/hicolor/256x256/apps"
-DESKTOP_FILE="remove-background.desktop"
+DESKTOP_FILE="com.wheelhouser.image-remove-background.desktop"
 ICON_NAME="remove-background.png"
 
 echo "=== GNOME Software Auto-check ==="
