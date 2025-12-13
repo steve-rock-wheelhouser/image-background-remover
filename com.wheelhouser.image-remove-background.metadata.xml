@@ -4,11 +4,14 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
 
+  <name>Image Background Remover</name>
+  <summary>Automatically remove backgrounds from photos and images using on-device AI</summary>
+
   <name xml:lang="en">Image Background Remover</name>
   <summary xml:lang="en">Automatically remove backgrounds from photos and images using on-device AI</summary>
 
-  <description xml:lang="en">
-    <p>
+  <description>
+    <p xml:lang="en">
       Image Background Remover is a desktop application for quickly and accurately removing
       backgrounds from images. It provides a one-click workflow for single images and
       a batch mode for processing multiple photos. The application is designed for
@@ -31,18 +34,11 @@
   </description>
 
   <launchable type="desktop-id">remove-background.desktop</launchable>
-
   <developer id="com.wheelhouser">
     <name>Wheelhouser LLC</name>
     <url>https://wheelhouser.com</url>
-  </developer>
-
-  <maintainer>
-    <name>Steve Rock-Wheelhouser</name>
     <email>steve@wheelhouser.com</email>
-  </maintainer>
-
-  <update-contact>steve@wheelhouser.com</update-contact>
+  </developer>
 
   <keywords>
     <keyword xml:lang="en">background</keyword>
@@ -55,14 +51,14 @@
 
   <url type="homepage">https://wheelhouser.com</url>
   <url type="bugtracker">https://github.com/steve-rock-wheelhouser/image-background-remover/issues</url>
-  <url type="donation">https://wheelhouser.com/donate</url>
+  <url type="contact">https://wheelhouser.com/contact</url>
 
   <content_rating type="oars-1.1" />
 
   <screenshots>
     <screenshot type="default">
       <caption xml:lang="en">Main window showing preview and tools</caption>
-      <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenshot.png</image>
+      <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenhot.png</image>
     </screenshot>
     <screenshot>
       <caption xml:lang="en">Batch processing multiple images</caption>
@@ -74,15 +70,10 @@
     </screenshot>
   </screenshots>
   
-  <url type="homepage">https://wheelhouser.com</url>
-  <url type="bugtracker">https://github.com/steve-rock-wheelhouser/image-background-remover/issues</url>
-  
-  <content_rating type="oars-1.1" />
-  
   <releases>
     <release version="0.1.0" date="2025-12-12">
-      <description xml:lang="en">
-        <p>Initial release: one-click background removal, batch mode, and CLI support.</p>
+      <description>
+        <p xml:lang="en">Initial release: one-click background removal, batch mode, and CLI support.</p>
       </description>
       <url>https://github.com/steve-rock-wheelhouser/image-background-remover/releases/tag/v0.1.0</url>
     </release>
