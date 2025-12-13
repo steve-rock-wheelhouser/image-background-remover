@@ -1,10 +1,14 @@
 [Desktop Entry]
 Type=Application
 Name=Image Background Remover
-Comment=AI Background Remover
-Exec=remove-background
+GenericName=Background Remover
+Comment=Remove image backgrounds quickly with AI-powered matting
+Exec=remove-background %F
+TryExec=remove-background
 Icon=remove-background
 Terminal=false
-Categories=Graphics;Utility;
+Categories=Graphics;ImageProcessing;Utility;
 StartupNotify=true
 StartupWMClass=remove-background
+MimeType=image/png;image/jpeg;image/webp;
+Keywords=background;remove;image;photo;alpha;matting;

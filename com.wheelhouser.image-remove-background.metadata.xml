@@ -1,35 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>com.wheelhouser.image-remove-background</id>
-  <name>Image Background Remover</name>
-  <summary>Remove image backgrounds automatically using AI</summary>
-  <developer id="com.wheelhouser">
-    <name>Wheelhouser LLC</name>
-  </developer>  
-  
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
-  
-  <description>
+
+  <name xml:lang="en">Image Background Remover</name>
+  <summary xml:lang="en">Automatically remove backgrounds from photos and images using on-device AI</summary>
+
+  <description xml:lang="en">
     <p>
-      AI Background Remover is a professional desktop application that leverages machine learning 
-      to automatically detect and remove backgrounds from images. It supports various formats 
-      including PNG, JPG, and WEBP.
+      Image Background Remover is a desktop application for quickly and accurately removing
+      backgrounds from images. It provides a one-click workflow for single images and
+      a batch mode for processing multiple photos. The application is designed for
+      photographers, designers, and anyone who needs transparent PNGs or isolated subjects.
+    </p>
+    <p>
+      Key features:
+    </p>
+    <ul>
+      <li>Automatic subject detection with AI-powered matting for clean edges</li>
+      <li>Supports common image formats: PNG, JPEG, WEBP</li>
+      <li>Batch processing and drag-and-drop workflow</li>
+      <li>Preserves alpha channel and offers optional feathering and edge smoothing</li>
+      <li>Command-line mode for automation and integration into scripts</li>
+    </ul>
+    <p>
+      The tool is optimized for accuracy and speed on modern desktops and can be used
+      entirely offline once installed.
     </p>
   </description>
+
   <launchable type="desktop-id">remove-background.desktop</launchable>
 
-    <screenshots>
+  <developer id="com.wheelhouser">
+    <name>Wheelhouser LLC</name>
+    <url>https://wheelhouser.com</url>
+  </developer>
+
+  <maintainer>
+    <name>Steve Rock-Wheelhouser</name>
+    <email>steve@wheelhouser.com</email>
+  </maintainer>
+
+  <update-contact>steve@wheelhouser.com</update-contact>
+
+  <keywords>
+    <keyword xml:lang="en">background</keyword>
+    <keyword xml:lang="en">remove</keyword>
+    <keyword xml:lang="en">photo</keyword>
+    <keyword xml:lang="en">image</keyword>
+    <keyword xml:lang="en">alpha</keyword>
+    <keyword xml:lang="en">matting</keyword>
+  </keywords>
+
+  <url type="homepage">https://wheelhouser.com</url>
+  <url type="bugtracker">https://github.com/steve-rock-wheelhouser/image-background-remover/issues</url>
+  <url type="donation">https://wheelhouser.com/donate</url>
+
+  <content_rating type="oars-1.1" />
+
+  <screenshots>
     <screenshot type="default">
-      <caption>Main application window</caption>
+      <caption xml:lang="en">Main window showing preview and tools</caption>
       <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenshot.png</image>
     </screenshot>
     <screenshot>
-      <caption>File browser window</caption>
+      <caption xml:lang="en">Batch processing multiple images</caption>
       <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenshot-01.png</image>
     </screenshot>
     <screenshot>
-      <caption>Additional features</caption>
+      <caption xml:lang="en">Optional feather and edge smoothing controls</caption>
       <image>https://github.com/steve-rock-wheelhouser/image-background-remover/raw/main/assets/screenshots/screenshot-02.png</image>
     </screenshot>
   </screenshots>
@@ -41,9 +81,11 @@
   
   <releases>
     <release version="0.1.0" date="2025-12-12">
-      <description>
-        <p>Initial release with support for multiple formats and dark theme.</p>
+      <description xml:lang="en">
+        <p>Initial release: one-click background removal, batch mode, and CLI support.</p>
       </description>
+      <url>https://github.com/steve-rock-wheelhouser/image-background-remover/releases/tag/v0.1.0</url>
     </release>
   </releases>
+
 </component>
