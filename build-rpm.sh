@@ -46,8 +46,8 @@ SOURCE_DIR="remove-background-${VERSION}"
 mkdir -p "build/${SOURCE_DIR}"
 
 # Copy files to source dir
-cp -f "${PWD}/com.wheelhouser.image-remove-background.desktop" "build/${SOURCE_DIR}/" || true
-cp -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" "build/${SOURCE_DIR}/" || true
+cp -f "${PWD}/com.wheelhouser.image-remove-background.desktop" "build/${SOURCE_DIR}/"
+cp -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" "build/${SOURCE_DIR}/"
 if [ -f "${PWD}/build/${BINARY_NAME}" ]; then
     cp -f "${PWD}/build/${BINARY_NAME}" "build/${SOURCE_DIR}/remove-background.bin"
 fi
