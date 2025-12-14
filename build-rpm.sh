@@ -17,7 +17,9 @@ fi
 echo "$VERSION $RELEASE" > "$RELEASE_FILE"
 
 ARCH="x86_64"
-BINARY_NAME="${APP_NAME}.bin"
+# BINARY_NAME="${APP_NAME}.bin"
+BINARY_NAME="remove-background.bin"
+
 SIGN_RPMS="1"
 GPG_KEY="8CC02D3C" # Run 'gpg --list-keys' and paste your new Wheelhouser LLC Key ID here
 
@@ -47,10 +49,13 @@ mkdir -p "build/${SOURCE_DIR}"
 
 # Copy files to source dir
 cp -f "${PWD}/com.wheelhouser.image-remove-background.desktop" "build/${SOURCE_DIR}/"
+
+# --- ADD THIS LINE HERE ---
+cp -f "${PWD}/LICENSE" "build/${SOURCE_DIR}/"
+# --------------------------
+
 # Copy AppStream metadata and normalize filename to .metainfo.xml (AppStream standard)
-if [ -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" ]; then
-    cp -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.metainfo.xml"
-elif [ -f "${PWD}/com.wheelhouser.image-remove-background.metainfo.xml" ]; then
+if [ -f "${PWD}/com.wheelhouser.image-remove-background.metainfo.xml" ]; then
     cp -f "${PWD}/com.wheelhouser.image-remove-background.metainfo.xml" "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.metainfo.xml"
 fi
 if [ -f "${PWD}/build/${BINARY_NAME}" ]; then
@@ -61,7 +66,11 @@ fi
 if [ -d "${PWD}/assets/icons/linux" ]; then
     mkdir -p "build/${SOURCE_DIR}/assets/icons/linux"
     cp -a "${PWD}/assets/icons/linux/" "build/${SOURCE_DIR}/assets/icons/"
+    cp -a "${PWD}/assets/icons/icon_remove-background.png" "build/${SOURCE_DIR}/assets/icons/"
 fi
+# --- REPLACE IT ALL WITH THIS SINGLE LINE ---
+# Copy the ENTIRE assets folder (Icons, Models, Everything)
+cp -r "${PWD}/assets" "build/${SOURCE_DIR}/"
 
 # Handle Screenshots
 mkdir -p "build/${SOURCE_DIR}/assets/screenshots"
