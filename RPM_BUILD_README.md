@@ -1,6 +1,37 @@
-# Image Resizer RPM Packaging Guide
+# Image Background Remover RPM Packaging Guide
 
-This document details the process, prerequisites, and structure for packaging the **Image Resizer** application as an RPM for Fedora/RHEL-based systems.
+This document details the process, prerequisites, and structure for packaging the **Image Background Remover** application as an RPM for Fedora/RHEL-based systems.
+
+## CRITICAL: Naming Conventions (READ THIS FIRST)
+
+**Failure to follow these rules will result in a "Generic" package in the Software Center (missing screenshots, icons, and descriptions).**
+
+The Linux Software Center relies on a strict link between the AppStream Metadata, the Desktop File, and the Icon.
+
+1.  **RDNN Format Required:** Use Reverse Domain Name Notation (e.g., `com.wheelhouser.image_remove_background`).
+2.  **NO HYPHENS in ID:** The App ID component must use **underscores** (`_`), not hyphens. Hyphens trigger validation errors (`cid-rdns-contains-hyphen`) that break the build.
+    *   **BAD:** `com.wheelhouser.image-remove-background`
+    *   **GOOD:** `com.wheelhouser.image_remove_background`
+3.  **Exact Filename Matching:**
+    *   **Desktop File:** `com.wheelhouser.image_remove_background.desktop`
+    *   **Metainfo File:** `com.wheelhouser.image_remove_background.metainfo.xml`
+    *   **Icon File:** `com.wheelhouser.image_remove_background.png`
+4.  **The ID Tag MUST Include Suffix:**
+    Inside the `.metainfo.xml` file, the `<id>` tag must match the desktop filename **exactly**, including the `.desktop` extension.
+    ```xml
+    <!-- CORRECT -->
+    <id>com.wheelhouser.image_remove_background.desktop</id>
+    
+    <!-- INCORRECT (Will break Software Center link) -->
+    <id>com.wheelhouser.image_remove_background</id>
+    ```
+5.  **Icon Reference:**
+    The `.desktop` file must refer to the icon by its full RDNN name (without extension):
+    ```ini
+    Icon=com.wheelhouser.image_remove_background
+    ```
+
+---
 
 ## Overview
 
@@ -22,10 +53,10 @@ The build script automatically attempts to install dependencies using `dnf`. You
 ## Project Structure
 
 *   **`build-rpm.sh`**: The main orchestration script.
-*   **`image-resizer.spec`**: The RPM specification file defining dependencies and installation paths.
-*   **`com.wheelhouser.image-resizer.desktop`**: System menu integration file.
-*   **`com.wheelhouser.image-resizer.metainfo.xml`**: AppStream metadata for software center visibility.
-*   **`build_binary.sh`**: (External) Script referenced to compile the Python code into a binary using Nuitka.
+*   **`remove-background.spec`**: The RPM specification file defining dependencies and installation paths.
+*   **`com.wheelhouser.image_remove_background.desktop`**: System menu integration file.
+*   **`com.wheelhouser.image_remove_background.metainfo.xml`**: AppStream metadata for software center visibility.
+*   **`compile.sh`**: Script referenced to compile the Python code into a binary using Nuitka.
 
 ## The Build Process
 
@@ -38,15 +69,65 @@ To build the RPM, run the script from the project root:
 ### Workflow Breakdown
 
 1.  **Version Management**:
-    *   Updates the `Version` in `image-resizer.spec` to `0.3.0`.
-    *   Auto-increments the `Release` number in the spec file (e.g., `4%{?dist}` -> `5%{?dist}`) to ensure upgrade paths work correctly.
+    *   Updates the `Version` in `remove-background.spec`.
+    *   Auto-increments the `Release` number in the spec file to ensure upgrade paths work correctly.
 
 2.  **Pre-Build Validation**:
     *   Validates the AppStream metadata (`metainfo.xml`) using `appstreamcli`.
     *   Validates the desktop entry (`.desktop`) using `desktop-file-validate`.
 
 3.  **Binary Compilation**:
-    *   Executes `./build_binary.sh` to generate the standalone executable.
+    *   Executes `./compile.sh` to generate the standalone executable if it doesn't exist.
+
+4.  **RPM Generation**:
+    *   Creates a clean build environment in `rpmbuild/`.
+    *   Copies assets, icons, and binaries.
+    *   Runs `rpmbuild -ba` to produce the final `.rpm` file.
+
+## Troubleshooting
+
+### Software Center shows "Generic" icon or missing screenshots
+1.  Check the **CRITICAL** section above.
+2.  Ensure the `<id>` in `metainfo.xml` matches the `.desktop` filename.
+3.  Ensure the `Icon=` in `.desktop` matches the installed icon filename in `/usr/share/icons/hicolor/...`.
+4.  Force a cache refresh:
+    ```bash
+    sudo appstreamcli refresh --force && killall gnome-software
+    ```
+
+### Build fails on "cid-rdns-contains-hyphen"
+You are using hyphens in your App ID (e.g., `image-remove-background`). Rename your files and ID to use underscores (`image_remove_background`).
+
+## Validation Tools
+
+We have included scripts to help verify your setup before and after installation.
+
+### 1. Verify Source Metadata (Pre-Build)
+Run this Python script to check if your source files (Desktop and Metainfo) match the naming conventions required by the Software Center.
+
+```bash
+python3 scripts/verify_metadata.py
+```
+
+### 2. Verify Installed Files (Post-Install)
+After installing the RPM, run this script to verify that the files were actually placed correctly on your system and that the IDs match.
+
+```bash
+./scripts/debug_install.sh
+```
+
+### 3. Manual Validation Commands
+You can also run the standard Linux validation tools manually:
+
+**Validate Desktop File:**
+```bash
+desktop-file-validate com.wheelhouser.image_remove_background.desktop
+```
+
+**Validate AppStream Metadata:**
+```bash
+appstreamcli validate com.wheelhouser.image_remove_background.metainfo.xml
+```
 
 4.  **Source Preparation**:
     *   Creates a clean build environment in `build/rpm-source`.

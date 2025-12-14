@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>com.wheelhouser.image-remove-background</id>
+  <id>com.wheelhouser.image_remove_background.desktop</id>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
 
@@ -92,7 +92,7 @@
   </screenshots>
 
   <releases>
-    <release version="0.1.0" date="2025-12-12">
+    <release version="0.1.0" date="2025-12-14">
       <description>
         <p xml:lang="en">Initial release: one-click background removal, batch mode, and CLI support.</p>
       </description>

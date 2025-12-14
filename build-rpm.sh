@@ -36,6 +36,13 @@ if [ ! -f "build/$BINARY_NAME" ]; then
     ./compile.sh
 fi
 
+# Verify binary
+if [ ! -x "build/$BINARY_NAME" ]; then
+    echo "Error: Binary build/$BINARY_NAME is not executable or missing."
+    exit 1
+fi
+file "build/$BINARY_NAME" | grep -q "ELF" || echo "Warning: Binary does not look like an ELF executable."
+
 # 2. Prepare RPM Build Directory Structure
 RPMBUILD_DIR="$PWD/rpmbuild"
 echo "--- Cleaning build environment ---"
@@ -45,38 +52,25 @@ mkdir -p $RPMBUILD_DIR/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 # Copy project sources that the spec expects into SOURCES so rpmbuild can access them
 echo "--- Preparing SOURCES ---"
 SOURCE_DIR="remove-background-${VERSION}"
+rm -rf "build/${SOURCE_DIR}"
 mkdir -p "build/${SOURCE_DIR}"
 
 # Copy files to source dir
-cp -f "${PWD}/com.wheelhouser.image-remove-background.desktop" "build/${SOURCE_DIR}/"
+cp -f "${PWD}/com.wheelhouser.image_remove_background.desktop" "build/${SOURCE_DIR}/"
 
-# --- ADD THIS LINE HERE ---
+# Copy LICENSE so the spec can install it
 cp -f "${PWD}/LICENSE" "build/${SOURCE_DIR}/"
-# --------------------------
 
 # Copy AppStream metadata and normalize filename to .metainfo.xml (AppStream standard)
-if [ -f "${PWD}/com.wheelhouser.image-remove-background.metainfo.xml" ]; then
-    cp -f "${PWD}/com.wheelhouser.image-remove-background.metainfo.xml" "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.metainfo.xml"
+if [ -f "${PWD}/com.wheelhouser.image_remove_background.metainfo.xml" ]; then
+    cp -f "${PWD}/com.wheelhouser.image_remove_background.metainfo.xml" "build/${SOURCE_DIR}/com.wheelhouser.image_remove_background.metainfo.xml"
 fi
 if [ -f "${PWD}/build/${BINARY_NAME}" ]; then
     cp -f "${PWD}/build/${BINARY_NAME}" "build/${SOURCE_DIR}/remove-background.bin"
 fi
 
-# Copy full icon directory structure (assets/icons/linux/<size>/icon.png) so spec can install all sizes
-if [ -d "${PWD}/assets/icons/linux" ]; then
-    mkdir -p "build/${SOURCE_DIR}/assets/icons/linux"
-    cp -a "${PWD}/assets/icons/linux/" "build/${SOURCE_DIR}/assets/icons/"
-    cp -a "${PWD}/assets/icons/icon_remove-background.png" "build/${SOURCE_DIR}/assets/icons/"
-fi
-# --- REPLACE IT ALL WITH THIS SINGLE LINE ---
 # Copy the ENTIRE assets folder (Icons, Models, Everything)
 cp -r "${PWD}/assets" "build/${SOURCE_DIR}/"
-
-# Handle Screenshots
-mkdir -p "build/${SOURCE_DIR}/assets/screenshots"
-if [ -d "${PWD}/assets/screenshots" ]; then
-    cp -f "${PWD}/assets/screenshots/"*.png "build/${SOURCE_DIR}/assets/screenshots/" || true
-fi
 
 # Create Tarball
 echo "--- Creating Source Tarball ---"
@@ -89,8 +83,12 @@ if ! command -v appstreamcli &> /dev/null; then
     echo "Warning: 'appstreamcli' is not installed. Skipping metadata validation."
 else
     # Validate the copied/normalized metainfo inside the source dir if present
-    if [ -f "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.metainfo.xml" ]; then
-        appstreamcli validate "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.metainfo.xml" || {
+    if [ -f "build/${SOURCE_DIR}/com.wheelhouser.image_remove_background.metainfo.xml" ]; then
+        echo "--- DEBUG: Checking ID in metainfo before packaging ---"
+        grep "<id>" "build/${SOURCE_DIR}/com.wheelhouser.image_remove_background.metainfo.xml"
+        echo "-------------------------------------------------------"
+
+        appstreamcli validate "build/${SOURCE_DIR}/com.wheelhouser.image_remove_background.metainfo.xml" || {
             echo "AppStream metadata validation failed. Please fix the errors above."; exit 1; }
     else
         echo "No metainfo found in build source dir; skipping validation."
@@ -100,7 +98,7 @@ fi
 # Validate Desktop File
 echo "--- Validating Desktop File ---"
 if command -v desktop-file-validate &> /dev/null; then
-    desktop-file-validate "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.desktop" || {
+    desktop-file-validate "build/${SOURCE_DIR}/com.wheelhouser.image_remove_background.desktop" || {
         echo "Desktop file validation failed."; exit 1; }
 else
     echo "Warning: 'desktop-file-validate' not found. Skipping validation."
@@ -215,3 +213,22 @@ EOF
 else
     echo "SIGN_RPMS not set or not 1; skipping GPG signing step."
 fi
+
+echo "=== STEP 5: VERIFY RPM CONTENT ==="
+RPM_FILE=$(find rpmbuild/RPMS -name "*.rpm" | head -n 1)
+if [ -n "$RPM_FILE" ]; then
+    echo "Checking contents of $RPM_FILE..."
+    echo "--- Icons ---"
+    rpm -qlp "$RPM_FILE" | grep "icons" || echo "No icons found!"
+    echo "--- Desktop File ---"
+    rpm -qlp "$RPM_FILE" | grep ".desktop" || echo "No desktop file found!"
+    echo "--- Binary ---"
+    rpm -qlp "$RPM_FILE" | grep "bin" || echo "No binary found!"
+else
+    echo "ERROR: No RPM file found!"
+    exit 1
+fi
+
+echo ""
+echo "=== SUCCESS ==="
+echo "Ready to install."
