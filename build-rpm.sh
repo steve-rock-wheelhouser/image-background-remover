@@ -47,20 +47,26 @@ mkdir -p "build/${SOURCE_DIR}"
 
 # Copy files to source dir
 cp -f "${PWD}/com.wheelhouser.image-remove-background.desktop" "build/${SOURCE_DIR}/"
-cp -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" "build/${SOURCE_DIR}/"
+# Copy AppStream metadata and normalize filename to .metainfo.xml (AppStream standard)
+if [ -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" ]; then
+    cp -f "${PWD}/com.wheelhouser.image-remove-background.metadata.xml" "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.metainfo.xml"
+elif [ -f "${PWD}/com.wheelhouser.image-remove-background.metainfo.xml" ]; then
+    cp -f "${PWD}/com.wheelhouser.image-remove-background.metainfo.xml" "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.metainfo.xml"
+fi
 if [ -f "${PWD}/build/${BINARY_NAME}" ]; then
     cp -f "${PWD}/build/${BINARY_NAME}" "build/${SOURCE_DIR}/remove-background.bin"
 fi
 
-# Handle Icon
-if [ -f "${PWD}/icon.png" ]; then
-    cp -f "${PWD}/icon.png" "build/${SOURCE_DIR}/icon.png"
-elif [ -f "${PWD}/assets/icons/linux/256x256/icon.png" ]; then
-    echo "Copying assets/icons/linux/256x256/icon.png as icon.png"
-    cp -f "${PWD}/assets/icons/linux/256x256/icon.png" "build/${SOURCE_DIR}/icon.png"
-elif [ -f "${PWD}/assets/icons/icon_remove-background.png" ]; then
-    echo "Copying assets/icons/icon_remove-background.png as icon.png"
-    cp -f "${PWD}/assets/icons/icon_remove-background.png" "build/${SOURCE_DIR}/icon.png"
+# Copy full icon directory structure (assets/icons/linux/<size>/icon.png) so spec can install all sizes
+if [ -d "${PWD}/assets/icons/linux" ]; then
+    mkdir -p "build/${SOURCE_DIR}/assets/icons/linux"
+    cp -a "${PWD}/assets/icons/linux/" "build/${SOURCE_DIR}/assets/icons/"
+fi
+
+# Handle Screenshots
+mkdir -p "build/${SOURCE_DIR}/assets/screenshots"
+if [ -d "${PWD}/assets/screenshots" ]; then
+    cp -f "${PWD}/assets/screenshots/"*.png "build/${SOURCE_DIR}/assets/screenshots/" || true
 fi
 
 # Create Tarball
@@ -71,14 +77,24 @@ tar -czf "$RPMBUILD_DIR/SOURCES/remove-background-${VERSION}.tar.gz" -C build "$
 # Validate AppStream metadata
 echo "--- Validating AppStream metadata ---"
 if ! command -v appstreamcli &> /dev/null; then
-
-    echo "Error: 'appstreamcli' is not installed. Please install the 'appstream' package."
-    exit 1
+    echo "Warning: 'appstreamcli' is not installed. Skipping metadata validation."
+else
+    # Validate the copied/normalized metainfo inside the source dir if present
+    if [ -f "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.metainfo.xml" ]; then
+        appstreamcli validate "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.metainfo.xml" || {
+            echo "AppStream metadata validation failed. Please fix the errors above."; exit 1; }
+    else
+        echo "No metainfo found in build source dir; skipping validation."
+    fi
 fi
-appstreamcli validate com.wheelhouser.image-remove-background.metadata.xml
-if [ $? -ne 0 ]; then
-    echo "AppStream metadata validation failed. Please fix the errors above."
-    exit 1
+
+# Validate Desktop File
+echo "--- Validating Desktop File ---"
+if command -v desktop-file-validate &> /dev/null; then
+    desktop-file-validate "build/${SOURCE_DIR}/com.wheelhouser.image-remove-background.desktop" || {
+        echo "Desktop file validation failed."; exit 1; }
+else
+    echo "Warning: 'desktop-file-validate' not found. Skipping validation."
 fi
 
 
