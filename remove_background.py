@@ -42,6 +42,9 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PySide6.QtGui import QPixmap, QImage, QFont
 from PySide6.QtCore import Qt
 
+#============================================================================================
+#--- Background Remover Class ---
+#============================================================================================
 class BackgroundRemoverApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -255,6 +258,9 @@ class BackgroundRemoverApp(QMainWindow):
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to save image: {e}")
 
+#============================================================================================
+#--- Main Application Entry Point ---
+#============================================================================================
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = BackgroundRemoverApp()
