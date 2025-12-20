@@ -1,4 +1,22 @@
 #!/bin/bash
+# Function to play success sound
+play_success_sound() {
+    if command -v mpg123 &> /dev/null && [ -f "$HOME/projects/audio-files/rpm_actually_built.mp3" ]; then
+        mpg123 "$HOME/projects/audio-files/rpm_actually_built.mp3" >/dev/null 2>&1 &
+    fi
+}
+
+# Function to play fail sound
+play_fail_sound() {
+    if command -v mpg123 &> /dev/null && [ -f "$HOME/projects/audio-files/rpm_failed.mp3" ]; then
+        mpg123 "$HOME/projects/audio-files/rpm_failed.mp3" >/dev/null 2>&1 &
+    fi
+}
+
+# Trap to play fail sound on exit if not successful
+SUCCESS=0
+trap 'if [ $SUCCESS -eq 0 ]; then play_fail_sound; fi' EXIT
+
 set -e
 
 APP_NAME="remove-background"
@@ -69,6 +87,26 @@ if [ -f "${PWD}/build/${BINARY_NAME}" ]; then
     cp -f "${PWD}/build/${BINARY_NAME}" "build/${SOURCE_DIR}/remove-background.bin"
 fi
 
+# --- Prepare Icons for RPM: assets/icons/com.wheelhouser.text_to_speech.svg ---
+# --- This ensure that the RDN for: /usr/share/icons/hicolor/scalable/apps is correct ---
+# --- Upon successful builds, a user should be able to:
+# --- ls /usr/share/icons/hicolor/scalable/apps | grep "com.wheelhouser*"
+#       com.wheelhouser.create_icon_files.svg
+#       com.wheelhouser.image_inpainter.svg
+#       com.wheelhouser.image_resizer.svg
+#       com.wheelhouser.text_to_speech.svg
+
+echo "--- Preparing and renaming icons for RPM spec file ---"
+SVG_ICON_SRC="assets/icons/icon.svg"
+PNG_ICON_SRC="assets/icons/icon.png"
+ICON_DEST_DIR="build/${SOURCE_DIR}/assets/icons"
+APP_ICON_NAME="com.wheelhouser.image_remove_background"
+mkdir -p "$ICON_DEST_DIR"
+cp "$SVG_ICON_SRC" "$ICON_DEST_DIR/${APP_ICON_NAME}.svg"
+cp "$PNG_ICON_SRC" "$ICON_DEST_DIR/${APP_ICON_NAME}.png"
+
+# --- Prepare Icon files for RPM ---
+echo "--- Copying icon files for RPM spec file ---"
 # Copy the ENTIRE assets folder (Icons, Models, Everything)
 cp -r "${PWD}/assets" "build/${SOURCE_DIR}/"
 
@@ -126,6 +164,7 @@ sed -i "s/^Release:[[:space:]]*.*/Release:    ${RELEASE}/" remove-background.spe
 rpmbuild -ba \
     --define "_topdir $RPMBUILD_DIR" \
     --define "__os_install_post %{nil}" \
+    --define "app_id ${APP_ICON_NAME}" \
     remove-background.spec
 
 echo "--- Done! RPMs located at: ---"
