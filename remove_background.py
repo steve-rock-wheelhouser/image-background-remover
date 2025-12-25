@@ -49,6 +49,20 @@ from PySide6.QtGui import QPixmap, QImage, QFont, QIcon
 from PySide6.QtCore import Qt
 
 #============================================================================================
+#--- Helper Functions ---
+#============================================================================================
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    
+    # For py2app, the resources are in a 'Resources' directory
+    if 'py2app' in sys.argv:
+        return os.path.join(os.path.dirname(sys.executable), '..', 'Resources', relative_path)
+
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), relative_path)
+
+#============================================================================================
 #--- Background Remover Class ---
 #============================================================================================
 class BackgroundRemoverApp(QMainWindow):
@@ -57,7 +71,7 @@ class BackgroundRemoverApp(QMainWindow):
 
         # Window setup
         self.setWindowTitle("Image Background Remover")
-        self.setWindowIcon(QIcon("assets/icons/icon.png"))
+        self.setWindowIcon(QIcon(resource_path("assets/icons/icon.ico")))
         self.resize(900, 600)
 
         # Apply Dark Theme
@@ -290,7 +304,7 @@ class BackgroundRemoverApp(QMainWindow):
         about_dlg.setWindowTitle("About Image Background Remover")
 
         # Set the icon
-        icon_path = "assets/icons/icon.png"
+        icon_path = resource_path("assets/icons/icon.ico")
         pixmap = QPixmap(icon_path)
         if not pixmap.isNull():
             about_dlg.setIconPixmap(pixmap.scaled(128, 128, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))

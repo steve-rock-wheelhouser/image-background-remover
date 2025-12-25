@@ -1,5 +1,11 @@
 # PowerShell script to build the executable using PyInstaller
 
+# Clean previous builds
+Write-Host "Cleaning previous builds..."
+if (Test-Path build) { Remove-Item build -Recurse -Force }
+if (Test-Path dist) { Remove-Item dist -Recurse -Force }
+if (Test-Path *.spec) { Remove-Item *.spec -Force }
+
 # Activate the virtual environment
 Write-Host "Activating virtual environment..."
 . ..\activate_venv.ps1
@@ -10,6 +16,6 @@ pip install pyinstaller
 
 # Build the executable
 Write-Host "Building executable with PyInstaller..."
-pyinstaller --onefile --windowed --collect-submodules rembg --collect-all rembg --icon=..\assets\icons\linux\128x128\icon.png ..\remove_background.py
+pyinstaller --onefile --windowed --collect-submodules rembg --collect-all rembg --add-data "..\assets;assets" --icon=..\assets\icons\icon.ico ..\remove_background.py
 
 Write-Host "Build completed. Check the dist folder for the executable."
