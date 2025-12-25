@@ -304,7 +304,7 @@ class BackgroundRemoverApp(QMainWindow):
         about_dlg.setWindowTitle("About Image Background Remover")
 
         # Set the icon
-        icon_path = resource_path("assets/icons/icon.ico")
+        icon_path = resource_path("assets/icons/icon.png")
         pixmap = QPixmap(icon_path)
         if not pixmap.isNull():
             about_dlg.setIconPixmap(pixmap.scaled(128, 128, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
