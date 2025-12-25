@@ -4,7 +4,8 @@
 Write-Host "Cleaning previous builds..."
 if (Test-Path build) { Remove-Item build -Recurse -Force }
 if (Test-Path dist) { Remove-Item dist -Recurse -Force }
-if (Test-Path *.spec) { Remove-Item *.spec -Force }
+# Don't delete the spec file as we need it
+# if (Test-Path *.spec) { Remove-Item *.spec -Force }
 
 # Activate the virtual environment
 Write-Host "Activating virtual environment..."
@@ -16,6 +17,6 @@ pip install pyinstaller
 
 # Build the executable
 Write-Host "Building executable with PyInstaller..."
-pyinstaller --onefile --windowed --collect-submodules rembg --collect-all rembg --add-data "..\assets;assets" --icon=..\assets\icons\icon.ico ..\remove_background.py
+pyinstaller remove_background.spec
 
 Write-Host "Build completed. Check the dist folder for the executable."
