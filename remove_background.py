@@ -27,6 +27,12 @@
 #    source .venv/bin/activate
 #    pip install --upgrade pip
 #    pip install -r requirements.txt
+# 
+# 1. On Windows, activate the virtual environment with:
+#   python3 -m venv .venv
+#   .\.venv\Scripts\Activate.ps1
+#   python.exe -m pip install --upgrade pip
+#   pip install -r requirements.txt
 #
 #===========================================================================================
 
@@ -39,7 +45,7 @@ import io
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                                QHBoxLayout, QPushButton, QLabel, QFileDialog, 
                                QMessageBox, QSizePolicy)
-from PySide6.QtGui import QPixmap, QImage, QFont
+from PySide6.QtGui import QPixmap, QImage, QFont, QIcon
 from PySide6.QtCore import Qt
 
 #============================================================================================
@@ -51,6 +57,7 @@ class BackgroundRemoverApp(QMainWindow):
 
         # Window setup
         self.setWindowTitle("Image Background Remover")
+        self.setWindowIcon(QIcon("assets/icons/icon.png"))
         self.resize(900, 600)
 
         # Apply Dark Theme
@@ -68,13 +75,27 @@ class BackgroundRemoverApp(QMainWindow):
             }
             QPushButton:hover {
                 background-color: #424242;
-                border: 1px solid #2196F3;
                 border: 1px solid #007AFF;
             }
             QPushButton:disabled {
                 background-color: #1e1e1e;
                 color: #555;
                 border: 1px solid #333;
+            }
+            QPushButton#aboutButton {
+                background-color: transparent;
+                border: none;
+                padding: 4px 8px;
+                color: #00BFFF;
+            }
+            QPushButton#aboutButton:hover {
+                background-color: #444444;
+                border: none;
+                border-radius: 4px;
+            }
+            QPushButton#aboutButton:pressed {
+                background-color: #333333;
+                border: none;
             }
         """)
 
@@ -109,6 +130,11 @@ class BackgroundRemoverApp(QMainWindow):
         self.btn_save.clicked.connect(self.save_image)
         self.btn_save.setEnabled(False)
         header_layout.addWidget(self.btn_save)
+
+        about_button = QPushButton("About")
+        about_button.setObjectName("aboutButton")
+        about_button.clicked.connect(self.show_about_dialog)
+        header_layout.addWidget(about_button)
 
         main_layout.addLayout(header_layout)
 
@@ -257,6 +283,33 @@ class BackgroundRemoverApp(QMainWindow):
                 self.lbl_status.setText(f"Saved to: {save_path}")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to save image: {e}")
+
+    def show_about_dialog(self):
+        """Shows the about dialog."""
+        about_dlg = QMessageBox(self)
+        about_dlg.setWindowTitle("About Image Background Remover")
+
+        # Set the icon
+        icon_path = "assets/icons/icon.png"
+        pixmap = QPixmap(icon_path)
+        if not pixmap.isNull():
+            about_dlg.setIconPixmap(pixmap.scaled(128, 128, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+
+        about_dlg.setTextFormat(Qt.TextFormat.RichText) # to allow HTML link
+        about_dlg.setText("<h3>Image Background Remover</h3>")
+        about_dlg.setInformativeText(
+            "<div style='font-size: 1.5em;'>"
+            "A simple tool to remove backgrounds from images.<br><br>"
+            "<span style='color: #00BFFF;'>"
+            "Version 1.0.0<br>"
+            "Current support for: png, jpg, jpeg, bmp, and webp file formats.<br>"
+            "</span><br>"
+            "© 2025 Wheelhouser LLC<br>"
+            "Visit our website to see what else we have to offer: <a href='https://wheelhouser.com' style='color: #00BFFF;'>wheelhouser.com</a>"
+            "</div>"
+        )
+        about_dlg.setStandardButtons(QMessageBox.StandardButton.Ok)
+        about_dlg.exec()
 
 #============================================================================================
 #--- Main Application Entry Point ---
