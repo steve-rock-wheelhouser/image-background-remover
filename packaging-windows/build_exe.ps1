@@ -9,11 +9,7 @@ if (Test-Path dist) { Remove-Item dist -Recurse -Force }
 
 # Activate the virtual environment
 Write-Host "Activating virtual environment..."
-. ..\activate_venv.ps1
-
-# Install PyInstaller if not already installed
-Write-Host "Installing PyInstaller..."
-pip install pyinstaller
+. .\activate_venv.ps1
 
 # Build the executable
 Write-Host "Building executable with PyInstaller..."
