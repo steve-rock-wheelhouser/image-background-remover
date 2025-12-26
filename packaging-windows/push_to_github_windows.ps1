@@ -79,7 +79,7 @@ try {
 
 # Check if there are any changes to commit
 $changes = Invoke-Git @("status", "--porcelain")
-if ($changes -eq $null -or $changes.Trim() -eq "") {
+if ([string]::IsNullOrWhiteSpace($changes)) {
     Write-Host "No changes to commit" -ForegroundColor Yellow
     exit 0
 }
