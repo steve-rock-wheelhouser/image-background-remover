@@ -39,8 +39,15 @@ Write-Host "Using Git at: $gitPath" -ForegroundColor Green
 # Function to run git commands
 function Invoke-Git {
     param([string[]]$arguments)
-    $result = & $gitPath @arguments 2>&1
-    if ($LASTEXITCODE -ne 0) {
+    $oldErrorAction = $ErrorActionPreference
+    $ErrorActionPreference = 'SilentlyContinue'
+    try {
+        $result = & $gitPath @arguments 2>&1
+        $exitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $oldErrorAction
+    }
+    if ($exitCode -ne 0) {
         Write-Host "Error: Git command failed: git $($arguments -join ' ')" -ForegroundColor Red
         Write-Host "Output: $result" -ForegroundColor Red
         exit 1
